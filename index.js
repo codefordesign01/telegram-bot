@@ -1,18 +1,17 @@
 const TelegramBot = require('node-telegram-bot-api');
 const axios = require('axios');
-require('dotenv').config();
+require('dotenv').config();  // Load environment variables from .env file
 
-// Apna real token yahan paste karo
-const token = 'YOUR_TELEGRAM_BOT_TOKEN';
+// Use Telegram Bot Token from .env file
+const token = process.env.TELEGRAM_BOT_TOKEN;
 const bot = new TelegramBot(token, { polling: true });
 
-// Stripe API Key
+// Use Stripe API Key from .env file
 const stripeApiKey = process.env.STRIPE_API_KEY;
 
 // Card verification function using Stripe
 async function verifyCard(cardNumber) {
   try {
-    // Sending the card number to Stripe for validation (simple validation example)
     const response = await axios.post(
       'https://api.stripe.com/v1/payment_methods',
       {
@@ -32,7 +31,8 @@ async function verifyCard(cardNumber) {
       }
     );
 
-    if (response.data.card.checks.cvc_check === 'pass') {
+    // Assuming response contains valid data
+    if (response.data.card && response.data.card.checks.cvc_check === 'pass') {
       return 'Card is live and valid ✅';
     } else {
       return 'Card is invalid or expired ❌';
@@ -47,7 +47,7 @@ async function verifyCard(cardNumber) {
 bot.onText(/\/verifycard (\d+)/, async (msg, match) => {
   const cardNumber = match[1];
 
-  // Check if the card number is valid (basic validation)
+  // Validate card number (check for 16 digits)
   if (!/^\d{16}$/.test(cardNumber)) {
     return bot.sendMessage(msg.chat.id, 'Please enter a valid 16-digit card number.');
   }
