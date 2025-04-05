@@ -1,8 +1,7 @@
+require('dotenv').config(); // env file load karega
 const TelegramBot = require('node-telegram-bot-api');
 
-// Apna real token yahan paste karo (BotFather se mila tha)
-const token = '7938764609:AAFUdBg9DyJWlDKFcJI_3XFMMau6LKkqrO8';
-
+const token = process.env.TELEGRAM_BOT_TOKEN;
 const bot = new TelegramBot(token, { polling: true });
 
 bot.onText(/\/start/, (msg) => {
